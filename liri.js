@@ -58,20 +58,20 @@ switch (action) {
 }
 
 //When the user types my-tweets do this
+var count = 0
 function myTweets() {
   var params = {screen_name: 'JoshDulin2'};
   client.get('statuses/user_timeline', params, function(error, tweets, response) {
-    if (!error) {
-      // for (var i = 0; i < 20; i++) {
-        console.log(tweets[0].created_at);
-        console.log(tweets[1].text);
-        console.log("----------------")
-        console.log(tweets[1].created_at);
-        console.log(tweets[1].text);
-        console.log("----------------")
-      // }
+    if (!error && count<20) {
+        console.log(tweets[count].created_at);
+        console.log(tweets[count].text);
+        count++;
+        myTweets();
     }
-    else{
+    else {
+      if (error === null) {
+        return
+      }
       console.log(error);
     }
   })
