@@ -25,19 +25,14 @@ var value = "";
 
 //For when theres more than one word in a movie title or song name
 for (var i = 3; i < nodeArgs.length; i++) {
-
     if (i > 3 && i < nodeArgs.length) {
-  
       value = value + "+" + nodeArgs[i];
-  
     }
-  
     else {
-  
       value += nodeArgs[i];
-  
     }
   }
+
 //Takes the first part of the user interface and uses it to decide which function to run
 switch (action) {
     case "my-tweets":
@@ -62,6 +57,7 @@ var count = 0
 function myTweets() {
   var params = {screen_name: 'JoshDulin2'};
   client.get('statuses/user_timeline', params, function(error, tweets, response) {
+    //Keep calling the function until we have 20 tweets
     if (!error && count<20) {
         console.log(tweets[count].created_at);
         console.log(tweets[count].text);
@@ -79,18 +75,26 @@ function myTweets() {
 
 //When the user types spotify-this-song do this
 function spotifyThisSong () {
-  spotify.search({ type: 'track', query: value }, function(err, data) {
+  //If the user leaves the search blank we search for The Sign
+  if (value === "") {
+    value ="The sign by Ace of Base";
+  }
+  spotify.search({ type: 'track', query: value, limit: 1}, function(err, data) {
     if (err) {
       return console.log('Error occurred: ' + err);
     }
     else{
-      console.log(data); 
+      console.log("Artist name: " + JSON.stringify(data.tracks.items[0].album.artists[0].name,null,2));
+      console.log("Song name: " + JSON.stringify(data.tracks.items[0].name,null,2)); 
+      console.log("Preview of song: " + JSON.stringify(data.tracks.items[0].preview_url,null,2));
+      console.log("Album name: " + JSON.stringify(data.tracks.items[0].album.name,null,2));    
     }
   });
 }
 
 //When the user types movie-this do this
 function movieThis() {
+  //If they leave the input blank fill it with Mr Nobody
   if (value === "") {
     value ="Mr Nobody";
   }
@@ -123,14 +127,12 @@ function doWhatItSays() {
     if (error) {
       return console.log(error);
     }
-  
+
     var dataArr = data.split(",");
 
     action = dataArr[0];
     value = dataArr[1]
 
-    console.log(action)
-    console.log(value)
     spotifyThisSong ()
   })
 }
